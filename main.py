@@ -123,3 +123,33 @@ def run_health_checker(urls: List[str]) -> Dict[str, Any]:
         "summary": summary,
         "detail_reports": results
     }
+
+def display_health_report(report_data: Dict[str, Any]) -> None:
+    """
+    Renders the aggregated health check telemetry and detail logs cleanly to stdout.
+    """
+    summary = report_data["summary"]
+    detail_reports = report_data["detail_reports"]
+    
+    print("\n" + "=" * 50)
+    print(f" WEBSITE HEALTH REPORT - {summary['timestamp']}")
+    print("=" * 50)
+    
+    # Render detailed records line by line
+    print("\n[DETAILED STATUS]")
+    for report in detail_reports:
+        code_str = f" (HTTP {report['code']})" if report['code'] is not None else ""
+        error_str = f" -> {report['error_message']}" if report['error_message'] else ""
+        
+        print(f"- {report['url']}: [{report['status']}]"
+              f"{code_str} | Latency: {report['response_time_ms']}ms{error_str}")
+        
+    # Render summary telemetry metrics dashboard
+    print("\n" + "-" * 50)
+    print("[METRICS SUMMARY]")
+    print(f"Total Domains Audited : {summary['total_checked']}")
+    print(f" Healthy Status     : {summary['healthy_count']}")
+    print(f" Unhealthy Status   : {summary['unhealthy_count']}")
+    print(f" Down / Unreachable : {summary['down_count']}")
+    print(f" Internal Errors    : {summary['error_count']}")
+    print("=" * 50 + "\n")
