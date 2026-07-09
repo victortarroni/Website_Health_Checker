@@ -56,3 +56,29 @@ def check_url_health(url: str, timeout: int = DEFAULT_TIMEOUT) -> Dict[str, Any]
         status_report["response_time_ms"] = round(elapsed * 1000, 2)
         
     return status_report
+
+def load_urls_from_file(file_path: str) -> List[str]:
+    """
+    Reads a text file line-by-line, sanitizes whitespace, 
+    and returns a clean list of target URLs to check.
+    """
+    urls: List[str] = []
+    
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            for line in file:
+                # Strip leading/trailing whitespaces and newlines
+                sanitized_line = line.strip()
+                
+                # Skip empty lines or comment lines (starting with '#')
+                if not sanitized_line or sanitized_line.startswith("#"):
+                    continue
+                
+                urls.append(sanitized_line)
+                
+    except FileNotFoundError:
+        print(f"Error: The target file '{file_path}' was not found.")
+    except Exception as e:
+        print(f"Error reading file '{file_path}': {e}")
+        
+    return urls
