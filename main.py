@@ -82,3 +82,44 @@ def load_urls_from_file(file_path: str) -> List[str]:
         print(f"Error reading file '{file_path}': {e}")
         
     return urls
+
+def run_health_checker(urls: List[str]) -> Dict[str, Any]:
+    """
+    Coordinates the execution engine across a collection of URLs, 
+    aggregating individual reports and general suite telemetry.
+    """
+    results: List[Dict[str, Any]] = []
+    summary = {
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "total_checked": 0,
+        "healthy_count": 0,
+        "unhealthy_count": 0,
+        "down_count": 0,
+        "error_count": 0
+    }
+    
+    if not urls:
+        return {"summary": summary, "detail_reports": results}
+        
+    for url in urls:
+        # Run our network checking step against the URL
+        report = check_url_health(url)
+        results.append(report)
+        
+        # Track metric categories based on status result
+        status = report["status"]
+        if status == "Healthy":
+            summary["healthy_count"] += 1
+        elif status == "Unhealthy":
+            summary["unhealthy_count"] += 1
+        elif status == "Down":
+            summary["down_count"] += 1
+        else:
+            summary["error_count"] += 1
+            
+    summary["total_checked"] = len(urls)
+    
+    return {
+        "summary": summary,
+        "detail_reports": results
+    }
