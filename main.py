@@ -153,3 +153,31 @@ def display_health_report(report_data: Dict[str, Any]) -> None:
     print(f" Down / Unreachable : {summary['down_count']}")
     print(f" Internal Errors    : {summary['error_count']}")
     print("=" * 50 + "\n")
+
+def main() -> None:
+    """
+    Main application entry point. Coordinates the loading, execution,
+    and presentation phases of the Website Health Checker.
+    """
+    # Define the input target file
+    target_file = "websites.txt"
+    
+    print(f"Initializing health check routine against data source: '{target_file}'...")
+    
+    # 1. Ingestion Phase
+    urls = load_urls_from_file(target_file)
+    
+    if not urls:
+        print(f"Aborting execution: No active URLs found to verify in '{target_file}'.")
+        sys.exit(0)
+        
+    print(f"Loaded {len(urls)} target domains. Beginning verification suite...")
+    
+    # 2. Processing Phase
+    report_data = run_health_checker(urls)
+    
+    # 3. Presentation Phase
+    display_health_report(report_data)
+
+if __name__ == "__main__":
+    main()
