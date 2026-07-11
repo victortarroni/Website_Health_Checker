@@ -199,3 +199,32 @@ def parse_arguments() -> argparse.Namespace:
     )
     
     return parser.parse_args()
+
+def main() -> None:
+    """
+    Main application entry point. Coordinates the loading, execution,
+    and presentation phases using runtime configurations.
+    """
+    # 0. Configuration Phase
+    args = parse_arguments()
+    target_file = args.file
+    
+    print(f"Initializing health check routine against data source: '{target_file}'...")
+    
+    # 1. Ingestion Phase
+    urls = load_urls_from_file(target_file)
+    
+    if not urls:
+        print(f"Aborting execution: No active URLs found to verify in '{target_file}'.")
+        sys.exit(0)
+        
+    print(f"Loaded {len(urls)} target domains. Beginning verification suite...")
+    
+    # 2. Processing Phase
+    report_data = run_health_checker(urls)
+    
+    # 3. Presentation Phase
+    display_health_report(report_data)
+
+if __name__ == "__main__":
+    main()
