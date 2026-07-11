@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 import urllib.request
 import urllib.error
+import argparse
 
 # Global configuration configuration
 DEFAULT_TIMEOUT: int = 5
@@ -181,3 +182,20 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+def parse_arguments() -> argparse.Namespace:
+    """
+    Parses command-line inputs to dynamically configure execution contexts.
+    """
+    parser = argparse.ArgumentParser(
+        description="Production-grade, modular Website Health Checker utility."
+    )
+    
+    parser.add_str_arg = parser.add_argument(
+        "-f", "--file",
+        type=str,
+        default="websites.txt",
+        help="Path to the target text file containing web addresses (default: websites.txt)"
+    )
+    
+    return parser.parse_args()
