@@ -5,6 +5,7 @@ from typing import Dict, List, Any
 import urllib.request
 import urllib.error
 import argparse
+import json
 
 # Global configuration configuration
 DEFAULT_TIMEOUT: int = 5
@@ -228,3 +229,14 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+def export_report_to_json(report_data: Dict[str, Any], output_file: str) -> None:
+    """
+    Persists the master telemetry collection out to a structured JSON file on disk.
+    """
+    try:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(report_data, f, indent=4, ensure_ascii=False)
+        print(f"[SUCCESS] Telemetry report successfully exported to local disk: '{output_file}'")
+    except IOError as e:
+        print(f"[CRITICAL ERROR] Failed to write JSON dump file to disk context: {e}")
