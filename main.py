@@ -156,80 +156,6 @@ def display_health_report(report_data: Dict[str, Any]) -> None:
     print(f" Internal Errors    : {summary['error_count']}")
     print("=" * 50 + "\n")
 
-def main() -> None:
-    """
-    Main application entry point. Coordinates the loading, execution,
-    and presentation phases of the Website Health Checker.
-    """
-    # Define the input target file
-    target_file = "websites.txt"
-    
-    print(f"Initializing health check routine against data source: '{target_file}'...")
-    
-    # 1. Ingestion Phase
-    urls = load_urls_from_file(target_file)
-    
-    if not urls:
-        print(f"Aborting execution: No active URLs found to verify in '{target_file}'.")
-        sys.exit(0)
-        
-    print(f"Loaded {len(urls)} target domains. Beginning verification suite...")
-    
-    # 2. Processing Phase
-    report_data = run_health_checker(urls)
-    
-    # 3. Presentation Phase
-    display_health_report(report_data)
-
-if __name__ == "__main__":
-    main()
-
-def parse_arguments() -> argparse.Namespace:
-    """
-    Parses command-line inputs to dynamically configure execution contexts.
-    """
-    parser = argparse.ArgumentParser(
-        description="Production-grade, modular Website Health Checker utility."
-    )
-    
-    parser.add_str_arg = parser.add_argument(
-        "-f", "--file",
-        type=str,
-        default="websites.txt",
-        help="Path to the target text file containing web addresses (default: websites.txt)"
-    )
-    
-    return parser.parse_args()
-
-def main() -> None:
-    """
-    Main application entry point. Coordinates the loading, execution,
-    and presentation phases using runtime configurations.
-    """
-    # 0. Configuration Phase
-    args = parse_arguments()
-    target_file = args.file
-    
-    print(f"Initializing health check routine against data source: '{target_file}'...")
-    
-    # 1. Ingestion Phase
-    urls = load_urls_from_file(target_file)
-    
-    if not urls:
-        print(f"Aborting execution: No active URLs found to verify in '{target_file}'.")
-        sys.exit(0)
-        
-    print(f"Loaded {len(urls)} target domains. Beginning verification suite...")
-    
-    # 2. Processing Phase
-    report_data = run_health_checker(urls)
-    
-    # 3. Presentation Phase
-    display_health_report(report_data)
-
-if __name__ == "__main__":
-    main()
-
 def export_report_to_json(report_data: Dict[str, Any], output_file: str) -> None:
     """
     Persists the master telemetry collection out to a structured JSON file on disk.
@@ -240,3 +166,57 @@ def export_report_to_json(report_data: Dict[str, Any], output_file: str) -> None
         print(f"[SUCCESS] Telemetry report successfully exported to local disk: '{output_file}'")
     except IOError as e:
         print(f"[CRITICAL ERROR] Failed to write JSON dump file to disk context: {e}")
+def parse_arguments() -> argparse.Namespace:
+    """
+    Configures and initializes the CLI argument parsing engine.
+    """
+    parser = argparse.ArgumentParser(
+        description="Production-grade website availability and latency tracking engine."
+    )
+    parser.add_argument(
+        '-f', '--file',
+        type=str,
+        default='websites.txt',
+        help="Path to the source target configuration file (default: websites.txt)"
+    )
+    parser.add_argument(
+        '-o', '--output',
+        type=str,
+        default=None,
+        help="Optional path to write out the raw telemetry map data structure as JSON"
+    )
+    return parser.parse_arguments()
+
+def main() -> None:
+    """
+    Main application entry point. Coordinates the loading, execution,
+    presentation, and persistence phases of our metrics engine.
+    """
+    # 0. Configuration Phase
+    args = parse_arguments()
+    target_file = args.file
+    output_file = args.output
+    
+    print(f"Initializing health check routine against data source: '{target_file}'...")
+    
+    # 1. Ingestion Phase
+    urls = load_urls_from_file(target_file)
+    if not urls:
+        print(f"Aborting execution: No active URLs found to verify in '{target_file}'.")
+        sys.exit(0)
+        
+    print(f"Loaded {len(urls)} target domains. Beginning verification suite...\n")
+    
+    # 2. Processing Phase
+    report_data = run_health_checker(urls)
+    
+    # 3. Presentation Phase
+    display_health_report(report_data)
+    
+    # 4. Persistence Phase
+    if output_file:
+        print("\nInitiating data persistence suite...")
+        export_report_to_json(report_data, output_file)
+
+if __name__ == "__main__":
+    main()
