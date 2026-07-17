@@ -1,0 +1,6 @@
+https://www.google.com
+https://www.github.com
+https://www.wikipedia.org
+https://httpstat.us/404
+https://thissitedoesnotexist12345.com
+# you can add comments like this
