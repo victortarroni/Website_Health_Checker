@@ -185,7 +185,7 @@ def parse_arguments() -> argparse.Namespace:
         default=None,
         help="Optional path to write out the raw telemetry map data structure as JSON"
     )
-    return parser.parse_arguments()
+    return parser.parse_args()
 
 def main() -> None:
     """
